@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>HTML 5 Boilerplate</title>
+        <style>
+            /* Change background to not be that spongebob eye burning meme. */
+            /* And account for color scheme. */
+            @media (prefers-color-scheme: dark) {
+                html {
+                    background-color: #404040;
+                    color: lightgray;
+                }
+            }
+            @media (prefers-color-scheme: light) {
+                html {
+                    background-color: whitesmoke;
+                    color:black;
+                }
+            }
+
+            table {
+                width: 100%;
+                border-spacing: 0 12px;
+            }
+
+            /* Formatting inline code quote blocks. */
+            .code {
+                background-color: rgba(0,0,0,0.05);
+                border-radius: 3px;
+                padding-left: 2px;
+                padding-right: 2px;
+                font-family: monospace;
+                white-space: nowrap; /* Don't break code over multiple lines, that can make more difficult to read */
+            }
+            @media (prefers-color-scheme: dark) {
+                .code {
+                    background-color: rgba(255,255,255,0.1);
+                }
+            }
+            @media (prefers-color-scheme: light) {
+                .code {
+                    background-color: rgba(0,0,0,0.05);
+                }
+            }
+
+            h2 {
+                margin-top: 100px;
+            }
+
+            /* Header style */
+            th {
+                text-align: left;
+                font-size: 1.2em;
+            }
+
+            /* Column widths */
+            #instructions th:nth-child(1), #instructions td:nth-child(1) {
+                width: 10%;
+            }
+            #instructions th:nth-child(2), #instructions td:nth-child(2) {
+                width: 10%;
+            }
+            #instructions th:nth-child(3), #instructions td:nth-child(3) {
+                width: 10%;
+            }
+            #instructions th:nth-child(4), #instructions td:nth-child(4) {
+                width: 50%;
+            }
+            #instructions th:nth-child(5),#instructions td:nth-child(5) {
+                width: 20%;
+            }
+            #directives th:nth-child(1), #directives td:nth-child(1) {
+                width: 15%;
+            }
+            #directives th:nth-child(2), #directives td:nth-child(2) {
+                width: 85%;
+            }
+
+            /* Monospace font for code */
+            #instructions td:nth-child(1),
+            #instructions td:nth-child(2),
+            #instructions td:nth-child(3),
+            #directives td:nth-child(1) {
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <p>
+            Some notes I've written for myself RISC-V based on
+            <a href="https://github.com/riscv-collab/riscv-gnu-toolchain">riscv-gnu-toolchain</a>.
+        </p>
+        <h2>RISC-V Assembler Directives</h2>
+        <hr/>
+        <p>
+            Assembler directives are like instructions but only exist at compile-time and are not
+            translated into machine code. They are "directives" to tell the assembler what to do, like
+            defining compile-time constants (e.g. find and replace every instance of this symbol with
+            this value). You won't find assembler directives in the RISC-V ISA. These will basically
+            always be prefixed with `.` e.g. `.equ` is a assembler directive while `add` is not.
+            Assembler directives are not specific to RISC-V and are often shared across different ISAs.
+        </p>
+        <table id="directives">
+            <tr>
+                <th>Directive</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>.equ</td>
+                <td>Defines a symbolic name for a value.</td>
+            </tr>
+            <tr>
+                <td>.section</td>
+                <td>Defines a section that will be used when laying out the program in memory.</td>
+            </tr>
+            <tr>
+                <td>.align</td>
+                <td>Aligns the next data to a given alignment boundary (in bytes). The given value must be a power of 2. It basically just adds padding until the next address is a multiple of the given value (`address % value == 0`).</td>
+            </tr>
+            <tr>
+                <td>.multiboot</td>
+                <td>Used to define the multiboot header section for a multiboot-compliant bootloader. Usualy seen at the top of the program with `.section .multiboot`.</td>
+            </tr>
+            <tr>
+                <td>.long</td>
+                <td>Writes a 32-bit value into memory. `.equ` defines a value but doesn't actually include it in the binary, `.long` does, so you will often see these used together.</td>
+            </tr>
+            <tr>
+                <td>.text</td>
+                <td>Used to define the section where assembly instructions are placed for execution e.g. `.section .text`.</td>
+            </tr>
+            <tr>
+                <td>.bss</td>
+                <td>Used to define the section where uninitialized data is placed in memory e.g. `.section .bss`.</td>
+            </tr>
+            <tr>
+                <td>.data</td>
+                <td>Used to define the section where initialized data is placed in memory e.g. `.section .data`.</td>
+            </tr>
+            <tr>
+                <td>.global</td>
+                <td>Used to define a symbol that is visible to the linker; so it exists after the assembler. E.g. `.global _start` where `_start` is the entry point of the program that needs to be visible to the linker.</td>
+            </tr>
+            <tr>
+                <td>.type</td>
+                <td>Specifies the type of a symbol to help the linker distinguish between functions and data. E.g. `.type _start, @function`.</td>
+            </tr>
+            <tr>
+                <td>.size</td>
+                <td>Specifies the size of a symbol in bytes. E.g. `.size _start, . - _start` sets the size of `_start` to the current location `.` minus `_start`; this effectively communicates that "this symbol occupies exactly the bytes from its label up to here" which is useful for debugging.</td>
+            </tr>
+        </table>
+        <h2>RISC-V Instructions</h2>
+        <hr/>
+        <p>The instructions found in the RISC-V ISA.</p>
+        <table id="instructions">
+            <tr>
+                <th>Instruction</th>
+                <th>x86 equivalent</th>
+                <th>aarch64 equivalent</th>
+                <th>Description</th>
+                <th>Extension</th>
+            </tr>
+            <tr>
+                <td>add</td>
+                <td>add</td>
+                <td>add</td>
+                <td>Add two registers.</td>
+                <td>Base Integer</td>
+            </tr>
+            <tr>
+                <td>la</td>
+                <td>mov</td>
+                <td></td>
+                <td>Load address of a symbol into a register.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>call</td>
+                <td>call</td>
+                <td></td>
+                <td>Calls a function; by pushing the return address onto the stack and jumping to the function's address.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>csrrc</td>
+                <td></td>
+                <td></td>
+                <td>Reads a CSR and clears bits in the register (csr-read).</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>wfi</td>
+                <td>hlt</td>
+                <td></td>
+                <td>Waits for interrupt.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>j</td>
+                <td>jmp</td>
+                <td></td>
+                <td>Jumps to a label e.g. `j 1b`. Labels can be defined a few different ways, with `1b` saying to jump to the nearest `1` label before (back) this point, with `1f` saying to jump to the nearest `1` label after (forward) this point.</td>
+                <td></td>
+            </tr>
+        </table>
+        <script>
+            // Format code quote blocks by replacing text wrapped in backticks with a span with the "code" class.
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.innerHTML = document.body.innerHTML.replace(
+                    /`([^`]+)`/g,
+                    '<span class="code">$1</span>'
+                );
+            });
+        </script>
+    </body>
+</html>
