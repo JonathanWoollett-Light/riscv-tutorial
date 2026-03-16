@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>HTML 5 Boilerplate</title>
+        <title>RISC-V Notes</title>
         <style>
             /* Change background to not be that spongebob eye burning meme. */
             /* And account for color scheme. */
@@ -28,21 +28,32 @@
 
             /* Formatting inline code quote blocks. */
             .code {
-                background-color: rgba(0,0,0,0.05);
                 border-radius: 3px;
                 padding-left: 2px;
                 padding-right: 2px;
+                /* Don't break code over multiple lines, that can make more difficult to read */
+                white-space: nowrap;
+            }
+            .code-block {
+                margin: 20px;
+                padding: 20px;
                 font-family: monospace;
-                white-space: nowrap; /* Don't break code over multiple lines, that can make more difficult to read */
+                white-space: pre-wrap;
             }
             @media (prefers-color-scheme: dark) {
-                .code {
+                .code, .code-block {
                     background-color: rgba(255,255,255,0.1);
+                }
+                .code-block {
+                    border: 2px solid rgba(255,255,255,0.1);
                 }
             }
             @media (prefers-color-scheme: light) {
-                .code {
+                .code, .code-block {
                     background-color: rgba(0,0,0,0.05);
+                }
+                .code-block {
+                    border: 2px solid rgba(0,0,0,0.05);
                 }
             }
 
@@ -90,9 +101,29 @@
     </head>
     <body>
         <p>
-            Some notes I've written for myself RISC-V based on
+            Some notes I've written for myself doing os dev with RISC-V based on
             <a href="https://github.com/riscv-collab/riscv-gnu-toolchain">riscv-gnu-toolchain</a>.
         </p>
+        <h2>Tutorial</h2>
+        <hr/>
+        <p>
+            This is my learning process of following the
+            <a href="https://wiki.osdev.org/Bare_Bones">wiki.osdev.org/Bare_Bones</a>
+            tutorial for RISC-V in RISC-V assembly.
+        </p>
+        <p>
+            In many ways writing the whole thing in assembly is much simpler, in the original
+            tutorial it requires some assembly to bootstrap the C kernel file, while here we only
+            need 1 file written in assembly. It also simplifies the build process.
+        </p>
+        <p>
+            This first file will be a minimal bare-bones kernel which writes to VGA and uses the
+            multiboot standard.
+        </p>
+        <div class="code-block">.equ ALIGN,   1 &lt&lt 0          /* align loaded modules on page boundaries */
+.equ MEMINFO, 1 &lt&lt 1          /* provide memory map */
+.equ FLAGS,   ALIGN | MEMINFO /* this is the Multiboot 'flag' field */
+.equ MAGIC,   0x1BADB002      /* 'magic number' lets bootloader find the header */</div>
         <h2>RISC-V Assembler Directives</h2>
         <hr/>
         <p>
